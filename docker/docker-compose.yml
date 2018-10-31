@@ -1,0 +1,31 @@
+version: '3.5'
+
+services:
+    target:
+        build: Target/.
+        networks:
+          attack-net:
+            ipv4_address: 172.19.0.10
+        volumes:
+        - ./pcaps:/pcap
+    bystander:
+        build: Bystander/.
+        networks:
+          attack-net:
+            ipv4_address: 172.19.0.11
+    attacker:
+        build: Attacker/.
+        networks:
+          attack-net:
+            ipv4_address: 172.19.0.12
+        depends_on:
+          - "target"
+          - "bystander"
+
+networks:
+  attack-net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.19.0.0/24
